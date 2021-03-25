@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
 import VideoRecorder from 'react-video-recorder';
-import S3 from "react-aws-s3";
 import * as AWS from "aws-sdk";
 
 
