@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
-const dstBucket = "frame-input-bucket";
+const dstBucket = "invigilator-frame-input-bucket";
 
 exports.handler = async(event, context, callback) => {
 
@@ -26,7 +26,7 @@ exports.handler = async(event, context, callback) => {
 
     try {
         const putResult = await s3.upload(destparams).promise();
-        console.log("Upolading to S3 Bucket Status", putResult);
+        console.log("Uploading to S3 Bucket Status", putResult);
     }
     catch (err) {
         console.log("Error in uploading image to S3 Bucket", err);
