@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "nodemon": "2.0.7"
