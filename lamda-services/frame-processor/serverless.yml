@@ -1,0 +1,59 @@
+service: frame-processor-service
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: us-east-1
+
+functions:
+  handler:
+    handler: index.handler
+    events:
+      - stream:
+          type: kinesis
+          arn: !GetAtt KinesisVideoStream.Arn
+          consumer: true
+    role: frameProcessorLambdaIAMRole
+
+resources:
+  Resources:
+    frameProcessorLambdaIAMRole:
+      Type: "AWS::IAM::Role"
+      Properties:
+        RoleName: frame-processor-lambda-role
+        Path: /service-role/
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Action:
+                - "sts:AssumeRole"
+              Effect: "Allow"
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        Policies:
+          - PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Action:
+                    - "kinesis:*"
+                  Effect: "Allow"
+                  Resource:
+                    - "*"
+                - Action:
+                    - "s3:PutObject"
+                  Effect: "Allow"
+                  Resource:
+                    - "arn:aws:s3:::invigilator-frame-input-bucket/*"
+            PolicyName: frame-processor-lambda-access-policy
+    KinesisVideoStream:
+      Type: "AWS::Kinesis::Stream"
+      Properties:
+        Name: frame-input-stream
+        ShardCount: 1
+    FrameInputS3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: invigilator-frame-input-bucket
