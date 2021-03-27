@@ -7,20 +7,20 @@ import { v4 as uuidv4 } from 'uuid';
 
 function App() {
 
-// Initialize the Amazon Cognito credentials provider
+    // Initialize the Amazon Cognito credentials provider
     AWS.config.region = 'us-east-1'; // Region
     AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-        IdentityPoolId: 'us-east-1:f1899ed5-00c6-4808-943a-ba0ef645a8f7',
+        IdentityPoolId: 'us-east-1:ead1028d-6385-4279-affc-4612957bdf2c',
     });
 
     const userId = new Date().valueOf() + "_" + uuidv4();
 
     const videoFileName = `${userId}.mp4`;
-    const s3BasePath = `https://shanwije-inv-0419.s3.amazonaws.com/${videoFileName}`;
+    const s3BasePath = `https://invigilator-s3bucket-qljvzcoqk2zw.s3.amazonaws.com/${videoFileName}`;
 
     const s3 = new AWS.S3({
         params: {
-            Bucket: 'shanwije-inv-0419'
+            Bucket: 'invigilator-s3bucket-qljvzcoqk2zw'
         }
     });
 
@@ -28,10 +28,6 @@ function App() {
     return (
         <div className="App">
                 <VideoRecorder
-
-
-
-
                     onRecordingComplete={videoBlob => {
                         // Do something with the video...
                         console.log('videoBlob', videoBlob)
