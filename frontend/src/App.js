@@ -15,7 +15,7 @@ function App() {
 
     const userId = new Date().valueOf() + "_" + uuidv4();
 
-    const videoFileName = `${userId}.mp4`;
+    const videoFileName = `input/${userId}.mp4`;
     const s3BasePath = `https://invigilator-s3bucket-qljvzcoqk2zw.s3.amazonaws.com/${videoFileName}`;
 
     const s3 = new AWS.S3({
@@ -23,7 +23,6 @@ function App() {
             Bucket: 'invigilator-s3bucket-qljvzcoqk2zw'
         }
     });
-
 
     return (
         <div className="App">
