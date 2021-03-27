@@ -1,0 +1,35 @@
+{
+  "user_id": "1616829214010_e46fdf0c-2e17-44a9-9d75-01bdc621e17c",
+  "multiple_faces_found": true,
+  "frame_prefix": "elastictranscoder/1616829214010_e46fdf0c-2e17-44a9-9d75-01bdc621e17c.mp4/2021-03-27_07-14-03_thumbnail-",
+  "faces": [
+    {
+      "face_id": "7393d294-5d04-4f40-a810-6c0fae76a042",
+      "face_url": "output/1616829214010_e46fdf0c-2e17-44a9-9d75-01bdc621e17c.mp4/7393d294-5d04-4f40-a810-6c0fae76a042.png",
+      "frame_ids": [
+        3,
+        1,
+        4,
+        5,
+        2,
+        7,
+        9
+      ]
+    },
+    {
+      "face_id": "b49b7866-2a17-4c7a-ace1-a9b76f15f75b",
+      "face_url": "output/1616829214010_e46fdf0c-2e17-44a9-9d75-01bdc621e17c.mp4/b49b7866-2a17-4c7a-ace1-a9b76f15f75b.png",
+      "frame_ids": [
+        2,
+        6,
+        1
+      ]
+    }
+  ],
+  "empty frames_found": true,
+  "empty_frames": [
+    0,
+    10,
+    3
+  ]
+}
