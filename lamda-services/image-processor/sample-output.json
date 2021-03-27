@@ -1,0 +1,167 @@
+{
+    "frame_prefix": "elastictranscoder/Recording-test.mp4/2021-03-27_18-05-24_thumbnail-", 
+    "empty_frames": [
+        6, 
+        1, 
+        5, 
+        7, 
+        22, 
+        23, 
+        21, 
+        24
+    ], 
+    "faces": [
+        {
+            "Frames": [
+                3, 
+                28, 
+                27, 
+                26, 
+                20, 
+                25, 
+                9, 
+                8, 
+                2, 
+                10, 
+                19, 
+                4
+            ], 
+            "BoundingBox": {
+                "Width": 0.16924381256103516, 
+                "Top": 0.37793320417404175, 
+                "Left": 0.41319361329078674, 
+                "Height": 0.3539057970046997
+            }, 
+            "FaceId": "c9e13c29-afec-4cb1-9249-8f9be5084755", 
+            "BaseFrame": 3
+        }, 
+        {
+            "Frames": [
+                15, 
+                16, 
+                14, 
+                17, 
+                13
+            ], 
+            "BoundingBox": {
+                "Width": 0.19799929857254028, 
+                "Top": 0.5001047849655151, 
+                "Left": 0.060214459896087646, 
+                "Height": 0.41846033930778503
+            }, 
+            "FaceId": "e3fd4b62-d551-4379-aa0a-17e8af58316f", 
+            "BaseFrame": 15
+        }, 
+        {
+            "Frames": [
+                15, 
+                18
+            ], 
+            "BoundingBox": {
+                "Width": 0.04174075275659561, 
+                "Top": 0.21773728728294373, 
+                "Left": 0.6034336686134338, 
+                "Height": 0.11285790055990219
+            }, 
+            "FaceId": "a63cedac-eb26-4a4c-b50f-c4d06ebb60bf", 
+            "BaseFrame": 15
+        }, 
+        {
+            "Frames": [
+                15, 
+                16, 
+                12
+            ], 
+            "BoundingBox": {
+                "Width": 0.04385948181152344, 
+                "Top": 0.14815109968185425, 
+                "Left": 0.4908086359500885, 
+                "Height": 0.10603892058134079
+            }, 
+            "FaceId": "9e8483de-5af5-464c-8430-c805b8e1c3bc", 
+            "BaseFrame": 15
+        }, 
+        {
+            "Frames": [
+                17
+            ], 
+            "BoundingBox": {
+                "Width": 0.04815616458654404, 
+                "Top": 0.1677657663822174, 
+                "Left": 0.48329299688339233, 
+                "Height": 0.1057518869638443
+            }, 
+            "FaceId": "5072db69-d6d8-4051-b8d8-1aef6939b934", 
+            "BaseFrame": 17
+        }, 
+        {
+            "Frames": [
+                17, 
+                13
+            ], 
+            "BoundingBox": {
+                "Width": 0.04559183120727539, 
+                "Top": 0.248997300863266, 
+                "Left": 0.5991349816322327, 
+                "Height": 0.10132325440645218
+            }, 
+            "FaceId": "0aaecfc0-da19-475b-a15d-b3c301c6fbe3", 
+            "BaseFrame": 17
+        }, 
+        {
+            "Frames": [
+                18
+            ], 
+            "BoundingBox": {
+                "Width": 0.044432975351810455, 
+                "Top": 0.19150599837303162, 
+                "Left": 0.4807002544403076, 
+                "Height": 0.09987850487232208
+            }, 
+            "FaceId": "cab62fe7-12ba-49e0-9fbb-50a4d0439dac", 
+            "BaseFrame": 18
+        }, 
+        {
+            "Frames": [
+                12
+            ], 
+            "BoundingBox": {
+                "Width": 0.03828234598040581, 
+                "Top": 0.2560054063796997, 
+                "Left": 0.5957819223403931, 
+                "Height": 0.10209367424249649
+            }, 
+            "FaceId": "2f793c58-ac1f-467c-a323-4aee5110c3ae", 
+            "BaseFrame": 12
+        }, 
+        {
+            "Frames": [
+                16
+            ], 
+            "BoundingBox": {
+                "Width": 0.04127950593829155, 
+                "Top": 0.23094859719276428, 
+                "Left": 0.6041096448898315, 
+                "Height": 0.10425525158643723
+            }, 
+            "FaceId": "1b709e28-c7ac-45ba-af2c-c1d41c85aca8", 
+            "BaseFrame": 16
+        }, 
+        {
+            "Frames": [
+                14
+            ], 
+            "BoundingBox": {
+                "Width": 0.04076671600341797, 
+                "Top": 0.3191481828689575, 
+                "Left": 0.5789726376533508, 
+                "Height": 0.10235705971717834
+            }, 
+            "FaceId": "e556d771-773a-4825-9324-95aae3c450d3", 
+            "BaseFrame": 14
+        }
+    ], 
+    "multiple_faces_found": true, 
+    "empty_frames_found": true, 
+    "user_id": "Test2"
+}
