@@ -122,8 +122,8 @@ def lambda_handler(event, context):
     time.sleep(2)
     
 
-    # Search for faces that are similar to each face detected by the IndexFaces
-    # operation with a confidence in matches that is higher than 97%.
+    # Search for faces that are similar to each face detected by the IndexFaces operation with a confidence in 
+    # matches that is higher than 90%. If a similar face is found, that face is deleted from the faceIDs list
 
     for faceId in faceIDs:
         try:
@@ -135,8 +135,7 @@ def lambda_handler(event, context):
             )
             matchingFaces = [i['Face']['FaceId'] for i in response['FaceMatches']]
 
-            # Delete the face from the local variable 'faces' if it has no
-            # matching faces
+            # Delete the matched faceIDs from the faceIDs list
             baseFramNumber = faces[faceId]['frame_number']
             framesWithFace = [faces[faceId]['frame_number']]
             if len(matchingFaces) > 0:
@@ -158,22 +157,20 @@ def lambda_handler(event, context):
             print(e)
             raise(e)
     
-    # Create a visual representation
+    # Crop the face from the original frame
     for face in facesOutput:
         key = prefix + getZeros(face['base_frame']) + str(face['base_frame'])
         key += '.png'
         response = s3.get_object(Bucket=s3Bucket, Key=key)
         imgThumb = Image.open(StringIO(response['Body'].read()))
 
-        
         # Calculate the face position to crop the image
         boxLeft = int(math.floor(imgThumb.size[0] * face['bounding_box']['Left']))
         boxTop = int(math.floor(imgThumb.size[1] * face['bounding_box']['Top']))
         boxWidth = int(math.floor(imgThumb.size[0] * face['bounding_box']['Width']))
         boxHeight = int(math.floor(imgThumb.size[1] * face['bounding_box']['Height']))
 
-
-        # Paste the face thumbnail into the visual representation
+        # Paste the face thumbnail into the original photo and save to a temp file
         imgThumbCrop = imgThumb.crop((boxLeft, boxTop, boxLeft+boxWidth, boxTop+boxHeight))
         img = Image.new('RGB', (boxWidth, boxHeight), 'white')
         draw = ImageDraw.Draw(img)
@@ -187,7 +184,7 @@ def lambda_handler(event, context):
                 Bucket=s3Bucket,
                 Key=key
             )
-            print('Visual representation uploaded into the S3 bucket')
+            print('Cropped image is uploaded into the S3 bucket')
             face['face_url'] = key
             del face['bounding_box']
             del face['base_frame']
