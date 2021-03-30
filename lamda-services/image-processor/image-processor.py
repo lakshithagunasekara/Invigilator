@@ -5,22 +5,23 @@ import sys
 import time
 import random
 import math
-from datetime import datetime
-from Queue import Queue
-from threading import Thread
 from PIL import Image, ImageDraw
 from StringIO import StringIO
 
 
 CONCURRENT_THREADS = 50
-s3Bucket = 'invigilator-s3bucket-qljvzcoqk2zw'
+inputBucket = 'invigilator-frame-input-bucket'
+outputBucket = 'invigilator-output-bucket'
+awsRegion = 'us-east-1'
 
 def lambda_handler(event, context):
     userId = event['Event']['videoName']
     prefix = event['Event']['prefix']
+    
+    print(json.dumps(event))
 
-    rekognition = boto3.client('rekognition', region_name=os.environ['AWS_REGION'])
-    s3 = boto3.client('s3', region_name=os.environ['AWS_REGION'])
+    rekognition = boto3.client('rekognition', region_name=awsRegion)
+    s3 = boto3.client('s3', region_name=awsRegion)
 
     faces = {}
     faceIDs = []
@@ -51,12 +52,13 @@ def lambda_handler(event, context):
         thumbnailKeys = []
         paginator = s3.get_paginator('list_objects')
         response_iterator = paginator.paginate(
-            Bucket=s3Bucket,
+            Bucket=inputBucket,
             Prefix=prefix
         )
 
         for page in response_iterator:
             thumbnailKeys += [i['Key'] for i in page['Contents']]
+            print(page)
 
         print('Number of thumbnail objects found in the S3 bucket: {}'.format(len(thumbnailKeys)))
 
@@ -69,61 +71,37 @@ def lambda_handler(event, context):
     # Call the IndexFaces operation for each thumbnail. 50 concurrent
     # threads are used. Each iteration of a thread lasts at least one second. Faces
     # detected are stored in a local variable 'faces'.
-    indexFacesQueue = Queue()
-
-    def index_faces_worker():
-        rekognition = boto3.client('rekognition', region_name=os.environ['AWS_REGION'])
-
-        while True:
-            key = indexFacesQueue.get()
-            try:
-                startTime = datetime.now()
-                frameNumber = int(key[:-4][-5:])
-                response = rekognition.index_faces(
-                    CollectionId=collectionId,
-                    Image={'S3Object': {
-                        'Bucket': s3Bucket,
-                        'Name': key
-                    }},
-                    ExternalImageId=str(frameNumber)
-                )
-                
-                for face in response['FaceRecords']:
-                    faceId = face['Face']['FaceId']
-                    faceIDs.append(faceId)
-                    faces[faceId] = {
-                        'frame_number': frameNumber,
-                        'bounding_box': face['Face']['BoundingBox']
-                    }
-                if (len(response['FaceRecords'])) == 0:
-                    emptyFrames.append(frameNumber)
-                
-                endTime = datetime.now()
-                delta = int((endTime - startTime).total_seconds() * 1000)
-                if delta < 1000:
-                    timeToWait = float(1000 - delta)/1000
-                    time.sleep(timeToWait)
-
-            # The key is put back in the queue if the IndexFaces operation
-            except:
-                indexFacesQueue.put(key)
-
-            indexFacesQueue.task_done()
-
-    for i in range(CONCURRENT_THREADS):
-        t = Thread(target=index_faces_worker)
-        t.daemon = True
-        t.start()
-
-    for key in thumbnailKeys:
-        indexFacesQueue.put(key)
-
-    indexFacesQueue.join()
-    time.sleep(2)
     
+    
+    for key in thumbnailKeys:
+        frameNumber = int(key.replace(userId+"/", '')[:-4])
+    
+        try:
+            response = rekognition.index_faces(
+                CollectionId=collectionId,
+                Image={'S3Object': {
+                    'Bucket': inputBucket,
+                    'Name': key
+                }},
+                ExternalImageId=str(frameNumber)
+            )
+            print(json.dumps(response))
+                
+            for face in response['FaceRecords']:
+                faceId = face['Face']['FaceId']
+                faceIDs.append(faceId)
+                faces[faceId] = {
+                    'frame_number': frameNumber,
+                    'bounding_box': face['Face']['BoundingBox']
+                }
+            if (len(response['FaceRecords'])) == 0:
+                emptyFrames.append(frameNumber)
+        except Exception as e:
+            print("Exception ", e)
+        
 
-    # Search for faces that are similar to each face detected by the IndexFaces operation with a confidence in 
-    # matches that is higher than 90%. If a similar face is found, that face is deleted from the faceIDs list
+    # Search for faces that are similar to each face detected by the IndexFaces
+    # operation with a confidence in matches that is higher than 97%.
 
     for faceId in faceIDs:
         try:
@@ -135,7 +113,8 @@ def lambda_handler(event, context):
             )
             matchingFaces = [i['Face']['FaceId'] for i in response['FaceMatches']]
 
-            # Delete the matched faceIDs from the faceIDs list
+            # Delete the face from the local variable 'faces' if it has no
+            # matching faces
             baseFramNumber = faces[faceId]['frame_number']
             framesWithFace = [faces[faceId]['frame_number']]
             if len(matchingFaces) > 0:
@@ -157,20 +136,22 @@ def lambda_handler(event, context):
             print(e)
             raise(e)
     
-    # Crop the face from the original frame
+    # Create a visual representation
     for face in facesOutput:
-        key = prefix + getZeros(face['base_frame']) + str(face['base_frame'])
+        key = prefix + str(face['base_frame'])
         key += '.png'
-        response = s3.get_object(Bucket=s3Bucket, Key=key)
+        response = s3.get_object(Bucket=inputBucket, Key=key)
         imgThumb = Image.open(StringIO(response['Body'].read()))
 
+        
         # Calculate the face position to crop the image
         boxLeft = int(math.floor(imgThumb.size[0] * face['bounding_box']['Left']))
         boxTop = int(math.floor(imgThumb.size[1] * face['bounding_box']['Top']))
         boxWidth = int(math.floor(imgThumb.size[0] * face['bounding_box']['Width']))
         boxHeight = int(math.floor(imgThumb.size[1] * face['bounding_box']['Height']))
 
-        # Paste the face thumbnail into the original photo and save to a temp file
+
+        # Paste the face thumbnail into the visual representation
         imgThumbCrop = imgThumb.crop((boxLeft, boxTop, boxLeft+boxWidth, boxTop+boxHeight))
         img = Image.new('RGB', (boxWidth, boxHeight), 'white')
         draw = ImageDraw.Draw(img)
@@ -178,13 +159,13 @@ def lambda_handler(event, context):
         img.save('/tmp/img.png', 'PNG')
 
         try:
-            key = prefix.replace('elastictranscoder/', 'output/')[:-1] + face['face_id'] + '.png'
+            key = userId + "/" + face['face_id'] + '.png'
             s3.upload_file(
                 '/tmp/img.png',
-                Bucket=s3Bucket,
+                Bucket=outputBucket,
                 Key=key
             )
-            print('Cropped image is uploaded into the S3 bucket')
+            print('Visual representation uploaded into the S3 bucket')
             face['face_url'] = key
             del face['bounding_box']
             del face['base_frame']
@@ -205,10 +186,11 @@ def lambda_handler(event, context):
     
     # Upload the JSON result into the S3 bucket
     try:
+        key = userId + "/" + 'result.json'
         s3.put_object(
             Body=json.dumps(output_json, indent=4).encode(),
-            Bucket=s3Bucket,
-            Key=prefix.replace('elastictranscoder/', 'output/')[:-1] + 'result.json'
+            Bucket=outputBucket,
+            Key=key
         )
         print('JSON result uploaded into the S3 bucket')
 
@@ -216,16 +198,17 @@ def lambda_handler(event, context):
         print('Failed to upload the JSON result into the S3 bucket')
         print(e)
         raise(e)
+    client = boto3.client("lambda")
+    inputParams = {
+        "UserID" : userId
+    }
+    
+    response = client.invoke(
+        FunctionName = 'arn:aws:lambda:us-east-1:306694957374:function:email-lambda-service',
+        InvocationType = 'RequestResponse',
+        Payload = json.dumps(inputParams)
+    )
+        
+    return output_json
             
-            
-def getZeros(number):
-    if number <10:
-         return '0000'
-    elif number < 100:
-        return '000'
-    elif number < 1000:
-        return '00'
-    elif number < 10000:
-        return '0'
-    else:
-        return ''
+    
