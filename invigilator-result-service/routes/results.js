@@ -16,15 +16,15 @@ const frameRoutes = (app) => {
                 if (!error && response.statusCode == 200) {
                     try{
                         console.log("success")
-                        const data = JSON.parse(body);
-                        generateDoc(data)
-
-
-                        res.download('./results.docx',  'results.docx', function(err){
-                            if (err) {
-                                throw err;
-                            }
-                        });
+                        res.status(200);
+                        res.send(JSON.parse(body));
+                        // const data = JSON.parse(body);
+                        // generateDoc(data)
+                        // res.download('./results.docx',  'results.docx', function(err){
+                        //     if (err) {
+                        //         throw err;
+                        //     }
+                        // });
                     } catch (e) {
                         res.status(500);
                         console.log("json parse error ", e);
