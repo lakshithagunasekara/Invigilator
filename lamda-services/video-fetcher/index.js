@@ -6,12 +6,15 @@ exports.handler = async(event, context, callback) => {
 
     var record = event.Records[0].s3;
     var url = "https://" + record.bucket.name + ".s3.amazonaws.com/" + record.object.key;
+    var user = record.object.key.split(".")[0];
 
     var data = JSON.stringify({
-    "url":url,
-    "stream":"frame-input-stream",
-    "rate": "1000",
-    "partition":"0"}
+      "url":url,
+      "stream":"frame-input-stream",
+      "rate": "100",
+      "partition":"0",
+      "user": user
+      }
     );
     console.log(data);
 
