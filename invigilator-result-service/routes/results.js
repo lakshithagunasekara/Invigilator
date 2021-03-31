@@ -28,7 +28,7 @@ const frameRoutes = (app) => {
                     } catch (e) {
                         res.status(500);
                         console.log("json parse error ", e);
-                        res.send(e);
+                        res.send(e, s3_bucket_file_path);
                     }
                 } else {
                     console.log("request error " , response.body)
