@@ -3,7 +3,7 @@ const fs = require('fs');
 const carbone = require('carbone');
 const _  = require('lodash');
 
-const bucket = 'https://invigilator-output-bucket.s3.amazonaws.com/';
+const bucket = 'https://invigilator-output-bucket.s3.amazonaws.com';
 
 const frameRoutes = (app) => {
 
@@ -11,7 +11,7 @@ const frameRoutes = (app) => {
     app.get('/results', (req, res) => {
         const student_id = req.query.id;
         if(student_id) {
-            const s3_bucket_file_path = `${bucket}output/${student_id}/results.json`;
+            const s3_bucket_file_path = `${bucket}/${student_id}/results.json`;
             request(s3_bucket_file_path, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     try{
