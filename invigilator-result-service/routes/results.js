@@ -33,7 +33,7 @@ const frameRoutes = (app) => {
                 } else {
                     console.log("request error " , response.body)
                     res.status(400);
-                    res.send(response.body, s3_bucket_file_path);
+                    res.send(s3_bucket_file_path);
                 }
             });
         } else {
