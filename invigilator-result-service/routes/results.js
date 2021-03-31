@@ -3,7 +3,7 @@ const fs = require('fs');
 const carbone = require('carbone');
 const _  = require('lodash');
 
-const bucket = 'https://invigilator-s3bucket-qljvzcoqk2zw.s3.amazonaws.com/';
+const bucket = 'https://invigilator-output-bucket.s3.amazonaws.com/';
 
 const frameRoutes = (app) => {
 
