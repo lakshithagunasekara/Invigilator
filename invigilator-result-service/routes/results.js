@@ -11,7 +11,7 @@ const frameRoutes = (app) => {
     app.get('/results', (req, res) => {
         const student_id = req.query.id;
         if(student_id) {
-            const s3_bucket_file_path = `${bucket}/${student_id}/results.json`;
+            const s3_bucket_file_path = `https://invigilator-output-bucket.s3.amazonaws.com/1617184227428_adbb8a3f-4625-4e31-a18e-8df4681dcd6d/result.json`;
             request(s3_bucket_file_path, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     try{
