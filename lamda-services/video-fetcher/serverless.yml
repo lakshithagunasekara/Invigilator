@@ -12,7 +12,7 @@ functions:
       - s3:
           bucket: invigilator-video-input-bucket
           event: s3:ObjectCreated:*
-          #existing: true
+          existing: true
     role: videoFetcherLambdaIAMRole
 
 resources:

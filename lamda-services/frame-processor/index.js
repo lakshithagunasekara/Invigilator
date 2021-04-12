@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
+const lambda = new AWS.Lambda();
 
 const dstBucket = "invigilator-frame-input-bucket";
 
@@ -11,16 +12,18 @@ exports.handler = async(event, context, callback) => {
     var data = JSON.parse(Buffer.from(kinesisData, 'base64').toString("ascii"));
 
     console.log(data);
-    console.log(data['Image'])
+//    console.log(data['Image'])
 
     var userId = data['User'];
-    var timestamp = data['Timestamp'];
+    var frameNumber = data['Frame Number'];
     // decode the again to read base64 encoded image
     var imageBuffer = new Buffer(data['Image'], 'base64');
+    var finalFrame = data['Final Frame'];
+    console.log(finalFrame);
 
     const destparams = {
         Bucket: dstBucket,
-        Key: userId + "-" + timestamp + ".jpg",
+        Key: userId + "/" + frameNumber + ".jpg",
         Body: imageBuffer
     };
 
@@ -31,5 +34,20 @@ exports.handler = async(event, context, callback) => {
     catch (err) {
         console.log("Error in uploading image to S3 Bucket", err);
     }
-};
 
+    console.log(finalFrame === "true");
+    if (finalFrame === "true") {
+      // Notify the video-processor lambda
+      var params = {
+        FunctionName: "image-processor-rekognition",
+        InvocationType: "RequestResponse",
+        LogType: "Tail",
+        Payload: JSON.stringify({
+          videoName: userId,
+          prefix: userId + "/",
+        }),
+      };
+      const result = await lambda.invoke(params).promise();
+      console.log("Results : " + result);
+    }
+};
